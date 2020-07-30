@@ -3,6 +3,12 @@ const express = require('express');
 const app = express();
 //it show activity logs on your console
 const morgan = require('morgan');
+
+//parse the body of incoming request, give a nicely format
+//doesn´t support files, but support url encoded, bodys, json data
+const bodyParser = require('body-parser');
+
+
 //import routes 
 const productRoutes = require('./api/routes/products');
 const ordersRoutes = require('./api/routes/orders');
@@ -10,7 +16,30 @@ const ordersRoutes = require('./api/routes/orders');
 //implementing morgan in the app
 app.use(morgan('dev'));
 
-//doing the routes redirection to handle request
+//integrate con the incoming request
+//extract the url encoded and json data and it is easy to read it
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+
+//CORS .- Cross Origin Resource Sharing, secured mecanism enforce by the browser
+//
+//adding header to our request
+//ensures that we prevent CORS errors
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers",
+        "origin, X-Requested-With, Content-type, Accept, Authorization");
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+        return res.status(200).json({});
+    }
+    next();
+});
+
+
+
+//ROUTES
 app.use('/products', productRoutes);
 app.use('/orders', ordersRoutes);
 
@@ -37,3 +66,6 @@ app.use((error, req, res, next) => {
 
 //
 module.exports = app;
+
+
+
