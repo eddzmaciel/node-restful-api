@@ -7,6 +7,15 @@ const morgan = require('morgan');
 //parse the body of incoming request, give a nicely format
 //doesn´t support files, but support url encoded, bodys, json data
 const bodyParser = require('body-parser');
+//connection to db
+const mongoose = require('mongoose');
+
+// mongoose.connect('mongo "mongodb+srv://node-rest-eddzmaciel.v241b.mongodb.net/' + process.env.DATABASE_NAME + '" --username eddzmaciel',
+
+// );
+
+mongoose.connect('mongodb+srv://eddzmaciel:7FOFOPROD@node-rest-eddzmaciel.v241b.mongodb.net/', { dbName: process.env.DATABASE_NAME });
+
 
 
 //import routes 

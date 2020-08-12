@@ -1,0 +1,6 @@
+{
+    "env": {
+        "MONGO_ATLAS_PW": "values",
+        "DATABASE_NAME": "db_products"
+    }
+}
