@@ -1,6 +1,9 @@
 {
     "env": {
         "MONGO_ATLAS_PW": "values",
-        "DATABASE_NAME": "db_products"
+        "DB_CONNECTION_URL": "@node-rest-eddzmaciel.v241b.mongodb.net/",
+        "DB_NAME": "db_products",
+        "DB_USERNAME": "eddzmaciel",
+        "DB_PASSWORD": "7FOFOPROD"
     }
 }

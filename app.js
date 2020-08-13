@@ -10,12 +10,19 @@ const bodyParser = require('body-parser');
 //connection to db
 const mongoose = require('mongoose');
 
+
+
 // mongoose.connect('mongo "mongodb+srv://node-rest-eddzmaciel.v241b.mongodb.net/' + process.env.DATABASE_NAME + '" --username eddzmaciel',
 
 // );
 
-mongoose.connect('mongodb+srv://eddzmaciel:7FOFOPROD@node-rest-eddzmaciel.v241b.mongodb.net/', { dbName: process.env.DATABASE_NAME });
-
+mongoose.connect(
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@node-rest-eddzmaciel.v241b.mongodb.net/`,
+    {
+        dbName: process.env.DB_NAME,
+        useUnifiedTopology: true,
+        useNewUrlParser: true
+    });
 
 
 //import routes 

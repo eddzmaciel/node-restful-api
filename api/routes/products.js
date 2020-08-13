@@ -6,14 +6,33 @@ const Product = require('../models/products');
 
 //incoming get request
 router.get('/', (req, res, next) => {
-    Product.find().exec()
+    Product.find()
+        //controlling which one fields you want to get
+        .select('name price _id')
+        .exec()
         .then(result => {
-            console.log(result);
+
+            //giving structure to the response object
+            const response = {
+                count: result.length,
+                products: result.map(doc => {
+                    return {
+                        name: doc.name,
+                        price: doc.price,
+                        _id: doc._id,
+                        //creating the request for the created element
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/products/' + doc._id
+                        }
+                    }
+                })
+            }
             //is not an error when you get an empty array, 
             //but you also can handle this kind of response
 
             // if (result.length >= 0) {
-            res.status(200).json(result);
+            res.status(200).json(response);
             // } else {
             //     res.status(400).json({
             //         message: 'no entries found'
@@ -37,10 +56,18 @@ router.post('/', (req, res, next) => {
     //will storage the values in the database
     product.save()
         .then(result => {
-            console.log('--> result from database: ', result);
             res.status(201).json({
-                message: 'handling POST request to /products - created successfully ',
-                data: result
+                message: 'Product Created Successfully ',
+                createdProduct: {
+                    name: result.name,
+                    price: result.price,
+                    _id: result._id,
+                    //request for the created object 
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:3000/products/' + result._id
+                    }
+                }
             });
         })
         .catch(err => {
@@ -52,12 +79,19 @@ router.post('/', (req, res, next) => {
 
 router.get('/:productId', (req, res, next) => {
     const id = req.params.productId;
-    Product.findById(id).exec()
+    Product.findById(id)
+        .select('name price _id')
+        .exec()
         .then(result => {
-            console.log('--> result from database: ', result);
             //we will throw an response 
             if (result) {
-                res.status(200).json(result);
+                res.status(200).json({
+                    product: result,
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:3000/products'
+                    }
+                });
             }
             else {
                 res.status(404).json({
@@ -86,9 +120,13 @@ router.patch('/:productId', (req, res, next) => {
     Product.update({ _id: id }, { $set: updatedOps })
         .exec()
         .then(result => {
-            console.log(result);
-            res.status(200).json(result)
-
+            res.status(200).json({
+                message: 'Product Updated',
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/products/' + id
+                }
+            })
         })
         .catch(err => {
             console.log(err);
@@ -104,7 +142,14 @@ router.delete('/:productId', (req, res, next) => {
     Product.remove({ _id: id })
         .exec()
         .then(result => {
-            res.status(200).json(result);
+            res.status(200).json({
+                message: 'Product deleted',
+                request: {
+                    type: 'POST',
+                    url: 'http://localhost:3000/products',
+                    body: { name: 'String', price: 'Number' }
+                }
+            });
         })
         .catch(err => {
             console.log(err);
