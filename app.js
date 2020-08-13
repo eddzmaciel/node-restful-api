@@ -32,10 +32,16 @@ const ordersRoutes = require('./api/routes/orders');
 //implementing morgan in the app
 app.use(morgan('dev'));
 
+//we will put the upload folder static public available 
+app.use('/uploads', express.static('uploads'));
+//urlexample to display:
+http://localhost:3000/uploads/2020-08-13T23:05:59.766ZScreen%20Shot%202020-07-31%20at%2011.41.50%20AM.png
+
 //integrate con the incoming request
 //extract the url encoded and json data and it is easy to read it
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 
 
 //CORS .- Cross Origin Resource Sharing, secured mecanism enforce by the browser

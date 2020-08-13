@@ -6,6 +6,7 @@ const productSchema = mongoose.Schema({
     _id: ObjectId, //mongoose.Types.ObjectId,
     name: { type: String, required: true },
     price: { type: Number, required: true },
+    productImage: { type: String, required: true }
 });
 
 //using ModelName
