@@ -1,21 +1,15 @@
-//
+
 const express = require('express');
 const app = express();
 //it show activity logs on your console
 const morgan = require('morgan');
-
 //parse the body of incoming request, give a nicely format
 //doesn´t support files, but support url encoded, bodys, json data
 const bodyParser = require('body-parser');
 //connection to db
 const mongoose = require('mongoose');
-
-
-
 // mongoose.connect('mongo "mongodb+srv://node-rest-eddzmaciel.v241b.mongodb.net/' + process.env.DATABASE_NAME + '" --username eddzmaciel',
-
 // );
-
 mongoose.connect(
     `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@node-rest-eddzmaciel.v241b.mongodb.net/`,
     {
@@ -23,11 +17,10 @@ mongoose.connect(
         useUnifiedTopology: true,
         useNewUrlParser: true
     });
-
-
 //import routes 
 const productRoutes = require('./api/routes/products');
 const ordersRoutes = require('./api/routes/orders');
+const usersRoutes = require('./api/routes/user');
 
 //implementing morgan in the app
 app.use(morgan('dev'));
@@ -42,10 +35,7 @@ http://localhost:3000/uploads/2020-08-13T23:05:59.766ZScreen%20Shot%202020-07-31
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
-
 //CORS .- Cross Origin Resource Sharing, secured mecanism enforce by the browser
-//
 //adding header to our request
 //ensures that we prevent CORS errors
 app.use((req, res, next) => {
@@ -59,11 +49,10 @@ app.use((req, res, next) => {
     next();
 });
 
-
-
 //ROUTES
 app.use('/products', productRoutes);
 app.use('/orders', ordersRoutes);
+app.use('/users', usersRoutes);
 
 //handling errors
 app.use((req, res, next) => {
