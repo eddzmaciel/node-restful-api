@@ -15,7 +15,8 @@ mongoose.connect(
     {
         dbName: process.env.DB_NAME,
         useUnifiedTopology: true,
-        useNewUrlParser: true
+        useNewUrlParser: true,
+        useCreateIndex: true
     });
 //import routes 
 const productRoutes = require('./api/routes/products');
