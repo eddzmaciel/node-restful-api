@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 //use this for encrypt our user password
 const bcrypt = require('bcrypt');
 
+//this is for generate our tokens
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/users');
 
 // we need to hash our password 
@@ -52,6 +55,58 @@ router.post('/signup', (req, res, next) => {
             }
         })
         .catch();
+});
+
+//request for token
+router.post('/login', (req, res, next) => {
+    User.find({ email: req.body.email })
+        .exec()
+        .then(user => {
+            if (user.length < 1) {
+                return res.status(401).json({
+                    message: 'Auth failed'
+                });
+            }
+            //comparing the password
+            bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+                if (err) {
+                    return res.status(401).json({
+                        message: 'Auth failed'
+                    });
+                }
+                //this comparation will return true or false
+                if (result) {
+                    //here we call the jwt
+                    //we will convert the values to encoded
+                    const token = jwt.sign({
+                        email: user[0].email,
+                        userId: user[0]._id
+                        //you have to use some complex JWT_KEY
+                    }, process.env.JWT_KEY,
+                        //here we are going to define the login options
+                        {
+                            expiresIn: "1h",
+                        }
+                    );
+
+                    //if is true will return this
+                    return res.status(200).json({
+                        message: 'Auth Successfull',
+                        token: token
+                    });
+                }
+                //if is false will return this
+                res.status(401).json({
+                    message: 'Auth failed'
+                });
+            });
+        })
+        .catch(err => {
+            console.log('err:', err);
+            res.status(500).json({
+                error: err
+            })
+        });
 });
 
 router.delete('/:userId', (req, res, next) => {
