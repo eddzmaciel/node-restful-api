@@ -2,11 +2,16 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
+//import the middleware for token validation
+const checkAuth = require('../middleware/check-auth');
+
 const Order = require('../models/orders');
 const Product = require('../models/products');
 
+
+
 // handle incoming GET request to /orders
-router.get('/', (req, res, next) => {
+router.get('/', checkAuth, (req, res, next) => {
     Order.find()
         .select('product quantity _id')
         //populate the order information with the products
@@ -37,7 +42,7 @@ router.get('/', (req, res, next) => {
         });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', checkAuth, (req, res, next) => {
     //be sure to create orders with products that we dont have
     Product.findById(req.body.productId)
         .then(product => {
@@ -80,7 +85,7 @@ router.post('/', (req, res, next) => {
 });
 
 //find order by Id
-router.get('/:orderId', (req, res, next) => {
+router.get('/:orderId', checkAuth, (req, res, next) => {
     Order.findById(req.params.orderId)
         .select('quantity product _id')
         //populate the order information with the products
@@ -112,7 +117,7 @@ router.get('/:orderId', (req, res, next) => {
 });
 
 
-router.delete('/:orderId', (req, res, next) => {
+router.delete('/:orderId', checkAuth, (req, res, next) => {
     Order.remove({
         _id: req.params.orderId
     })

@@ -3,6 +3,11 @@ const router = express.Router();
 const mongoose = require('mongoose');
 //able to handle body parser as formData
 const multer = require('multer');
+//import the middleware for token validation
+const checkAuth = require('../middleware/check-auth');
+const Product = require('../models/products');
+
+//CONFIGURATIONS
 //where and what kind of files to storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -15,7 +20,6 @@ const storage = multer.diskStorage({
         cb(null, new Date().toISOString() + file.originalname);
     }
 });
-
 //add filter for the files
 const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
@@ -27,7 +31,6 @@ const fileFilter = (req, file, cb) => {
         cb(null, false);
     }
 }
-
 const upload = multer(
     {
         storage: storage,
@@ -39,7 +42,9 @@ const upload = multer(
         fileFilter: fileFilter
     }
 );
-const Product = require('../models/products');
+
+
+//####### ROUTE LIST
 
 //incoming get request
 router.get('/', (req, res, next) => {
@@ -84,13 +89,12 @@ router.get('/', (req, res, next) => {
         });
 });
 
-//you can pass as many handlers as you want here
-//each handler is a middleware that executes before the next one runs
-//upload.single('productImage') send as a form-data
-router.post('/', upload.single('productImage'), (req, res, next) => {
-
+//1. you can pass as many handlers as you want here
+//2. each handler is a middleware that executes before the next one runs
+//3. upload.single('productImage') send as a form-data
+//4. I have added "checkAuth" to validate the auth user token, it will execute first
+router.post('/', checkAuth, upload.single('productImage'), (req, res, next) => {
     console.log('productImage: ', req.file);
-
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
@@ -152,7 +156,7 @@ router.get('/:productId', (req, res, next) => {
 });
 
 
-router.patch('/:productId', (req, res, next) => {
+router.patch('/:productId', checkAuth, (req, res, next) => {
     const id = req.params.productId;
     //we will pass the p
     const updatedOps = {};
@@ -181,7 +185,7 @@ router.patch('/:productId', (req, res, next) => {
 });
 
 //delete object by objectId
-router.delete('/:productId', (req, res, next) => {
+router.delete('/:productId', checkAuth, (req, res, next) => {
     const id = req.params.productId;
     Product.remove({ _id: id })
         .exec()
